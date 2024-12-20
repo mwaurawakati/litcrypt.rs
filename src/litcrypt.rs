@@ -178,9 +178,25 @@ pub fn use_litcrypt(_tokens: TokenStream) -> TokenStream {
 pub fn lc(tokens: TokenStream) -> TokenStream {
     let mut something = String::from("");
     for tok in tokens {
-        something = match tok {
-            TokenTree::Literal(lit) => lit.to_string(),
-            _ => "<unknown>".to_owned(),
+        match tok {
+            TokenTree::Literal(lit) => {
+                // Handle a direct string literal
+                something = lit.to_string();
+            }
+            TokenTree::Group(group) => {
+                // Handle macros like include_str! that provide literal inputs
+                let group_stream = group.stream();
+                for group_tok in group_stream {
+                    if let TokenTree::Literal(lit) = group_tok {
+                        something = lit.to_string();
+                        is_include_str = true;
+                    }
+                }
+            }
+            _ => {
+                // Anything else, mark as unknown
+                something = "<unknown>".to_owned();
+            }
         }
     }
     something = String::from(&something[1..something.len() - 1]);
