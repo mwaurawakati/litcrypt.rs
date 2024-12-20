@@ -189,7 +189,7 @@ pub fn lc(tokens: TokenStream) -> TokenStream {
                 for group_tok in group_stream {
                     if let TokenTree::Literal(lit) = group_tok {
                         something = lit.to_string();
-                        is_include_str = true;
+                        //is_include_str = true;
                     }
                 }
             }
